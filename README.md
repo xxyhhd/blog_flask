@@ -145,6 +145,7 @@ fun(a)
 print a  # [1]
 ```
 
+
 所有的变量都可以理解是内存中一个对象的“引用”，或者，也可以看似c中void*的感觉。
 
 通过`id`来看引用`a`的内存地址可以比较理解：
@@ -207,6 +208,46 @@ class A(object):
         print "executing static_foo(%s)"%x
 
 a=A()
+```
+我的：
+```python
+import time
+
+class Test():
+    a = 1
+    b = 2
+
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    # 实例方法
+    def ix_method(self):
+        print(self.a + self.b)
+
+    # 静态方法，是类的一种逻辑，经过staticmethod修饰过的类方法无需实例化即可被调用，参数随意，没有“self”和“cls”参数
+    @staticmethod
+    def static_method():
+        print(time.localtime())
+
+    # 第一个参数必须是当前类对象，该参数名一般约定为“cls”，通过它来传递类的属性和方法（不能传实例的属性和方法）
+    # 原则上，类方法是将类本身作为对象进行操作的方法。假设有个方法，且这个方法在逻辑上采用类本身作为对象来调用更合理，
+    # 那么这个方法就可以定义为类方法。另外，如果需要继承，也可以定义为类方法
+    @classmethod
+    def class_method(cls):
+        pass
+    # 子类会影响父类
+    # 实例对象和类对象都可以调用
+    
+
+# 实例方法可以用实例和类调用，但是类调用的时候也需要实例化
+demo_one = Test(3, 5)
+demo_one.ix_method()
+Test.ix_method(demo_one)
+
+# 静态方法，实例和类都可以调用
+demo_one.static_method()
+Test.static_method()
 
 ```
 
@@ -238,7 +279,9 @@ class Test(object):
     def __init__(self, name):  
         self.name = name  
         Test.num_of_instance += 1  
-  
+  # 当直接运行当前模块时，下面的代码执行，但是被其他模块import时不执行
+  #当运行该模块，__name__ = __main__为真
+  #当import时，= 模块名，为假
 if __name__ == '__main__':  
     print Test.num_of_instance   # 0
     t1 = Test('jack')  
@@ -285,7 +328,45 @@ print Person.name  # [1]
 这个也是python彪悍的特性.
 
 自省就是面向对象的语言所写的程序在运行时,所能知道对象的类型.简单一句就是运行时能够获得对象的类型.比如type(),dir(),getattr(),hasattr(),isinstance().
-
+1. dir() 函数不带参数时，返回当前范围(模块)内的变量、方法和定义的类型列表；带参数时，返回参数的属性、方法列表。
+    如 dir([]),返回列表的方法
+2. getattr() 函数用于返回一个对象属性值。
+    语法：getattr(object, name[, default])
+        object -- 对象。
+        name -- 字符串，对象属性。
+        default -- 默认返回值，如果不提供该参数，在没有对应属性时，将触发 AttributeError。
+```python        
+>>>class A(object):
+...     bar = 1
+... 
+>>> a = A()
+>>> getattr(a, 'bar')        # 获取属性 bar 值
+1
+>>> getattr(a, 'bar2')       # 属性 bar2 不存在，触发异常
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'A' object has no attribute 'bar2'
+>>> getattr(a, 'bar2', 3)    # 属性 bar2 不存在，但设置了默认值
+3
+>>>
+ ```
+ 4. hasattr() 函数用于判断对象是否包含对应的属性，如果属性催在返回True, 反之返回False
+    hasattr(object, name)
+    object -- 对象。
+    name -- 字符串，属性名。
+```python
+class Coordinate:
+    x = 10
+    y = -5
+    z = 0
+ 
+point1 = Coordinate() 
+print(hasattr(point1, 'x'))
+print(hasattr(point1, 'y'))  # 有该属性，返回True
+print(hasattr(point1, 'z'))
+print(hasattr(point1, 'no'))  # 没有该属性，返回False
+```
+        
 ```python
 a = [1,2,3]
 b = {'a':1,'b':2,'c':3}
