@@ -1,0 +1,17 @@
+{% extends'common/base.html' %}
+{% block title %}
+    个人信息
+{% endblock %}
+{% block page_content %}
+    <caption><h2>我的信息</h2></caption>
+        <tr align="center">
+            <td>姓名</td>
+            <td>{{ u.username }}</td>
+        </tr>
+    <br>
+        <tr align="center">
+            <td>性别</td>
+            <td>{% if u.sex %}男{% else %}女{% endif %}</td>
+        </tr>
+
+{% endblock %}

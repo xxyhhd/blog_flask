@@ -1,0 +1,17 @@
+{% macro show_comment_macro(endpoint,p, moment) %}
+    <center>
+
+    <div class="media-body">
+        {{ p.article|safe }}
+    </div>
+    <br>
+    <br>
+    <span style="float: right">
+        <p><span>作者：{{ p.comment_user.username }}</span></p>
+        <P><span>发表时间：{{ moment(p.timestamp).format('Y-M-D H:m:s') }}</span></p>
+    </span>
+
+
+{#{% endblock %}#}
+    </center>
+{% endmacro %}

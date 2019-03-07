@@ -1,0 +1,99 @@
+{% extends 'bootstrap/base.html' %}
+{% block navbar %}
+        <a href="{{ url_for('main.index') }}">
+        <div style="height: 50px; color: blue; font-size: 40px; margin-left: 80px">学习记录博客</div>
+            <div style="font-size: 40px; height: 50px; color: blue; margin-left: 160px">新手，学习中</div></a>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">博客</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="{{ url_for('main.index') }}">首页<span
+                            class="sr-only">(current)</span></a></li>
+                    <li><a href="{{ url_for('posts.send_posts') }}">发表博客</a></li>
+                    {#                    <li class="dropdown">#}
+                    {#                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"#}
+                    {#                           aria-expanded="false">个人信息 <span class="caret"></span></a>#}
+                    {#                        <ul class="dropdown-menu">#}
+                    {#                            <li><a href="#">个人信息</a></li>#}
+                    {#                            <li><a href="#">修改密码</a></li>#}
+                    {#                            <li><a href="#">修改信息</a></li>#}
+                    {#                            <li role="separator" class="divider"></li>#}
+                    {#                            <li><a href="#">占位</a></li>#}
+                    {#                            <li role="separator" class="divider"></li>#}
+                    {#                            <li><a href="#">退出登陆</a></li>#}
+                    {#                        </ul>#}
+                    {#                    </li>#}
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <form class="navbar-form navbar-left" method="post" action="{{ url_for('posts.search') }}">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="搜索" name="search">
+                        </div>
+                        <button type="submit" class="btn btn-default">搜索</button>
+                    </form>
+                    {#                    判断当前是否处于登录状态#}
+                    {% if current_user.is_authenticated %}
+                        <li><a>欢迎：{{ current_user.username }}</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('user.login') }}">登陆</a></li>
+                    {% endif %}
+
+                    <li><a href="{{ url_for('user.register') }}">注册</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">个人信息 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('user.my_info') }}">个人信息</a></li>
+                            <li><a href="{{ url_for('user.change_username') }}">修改账号</a></li>
+                            <li><a href="{{ url_for('user.change_password') }}">修改密码 </a></li>
+                            <li><a href="{{ url_for('user.change_icon') }}">修改头像 </a></li>
+                            <li><a href="{{ url_for('user.change_email') }}">修改邮箱 </a></li>
+                            <li><a href="{{ url_for('owncenter.posts_manager') }}">我的博客 </a></li>
+                            <li><a href="{{ url_for('owncenter.my_attention') }}">我的收藏 </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{{ url_for('user.logout') }}">退出登陆</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+{%- endblock navbar %}
+{% block content %}
+    <div class="container">
+
+        {% for info in get_flashed_messages() %}
+            <div class="alert alert-warning alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                {{ info }}
+            </div>
+        {% endfor %}
+
+        {% block page_content %}
+
+        {% endblock %}
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    {{ moment.locale('zh-CN') }}
+{% endblock %}

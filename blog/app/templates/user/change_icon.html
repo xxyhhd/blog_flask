@@ -1,0 +1,27 @@
+{% extends'common/base.html' %}
+{% block title %}
+    修改头像
+{% endblock %}
+
+{% block page_content %}
+    {% from 'bootstrap/wtf.html' import quick_form %}
+    {#    <h2>修改头像</h2>#}
+
+    <div class="row">
+        {#  <div class="col-md-8">.col-md-8</div>#}
+        <div class="col-md-8">
+            {% if filename %}
+                <h3>修改后头像</h3>
+                <img src="{{ url_for('static', filename='upload/'+filename, _external=True) }}" alt="">
+            {% else %}
+                <h3>当前的头像</h3>
+                {% if current_user.icon %}
+                    <img src="{{ url_for('static', filename='upload/'+current_user.icon, _external=True) }}" alt="">
+                {% else %}
+                    <img src="{{ url_for('static', filename='upload/default.jgp', _external=True) }}" alt="">
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-md-4">{{ quick_form(form) }}</div>
+    </div>
+{% endblock %}

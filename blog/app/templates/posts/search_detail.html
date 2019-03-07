@@ -1,0 +1,30 @@
+{% extends'common/base.html' %}
+{% block title %}
+    搜索
+{% endblock %}
+
+{% block page_content %}
+
+    {#    展示博客的样式#}
+    {% for row in data %}
+        <div class="media">
+            <div class="media-left media-middle">
+                <a href="#">
+{#                    <img class="media-object" src="..." alt="...">#}
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+row.user.icon, _external=True) }}" alt="...">
+                </a>
+            </div>
+            <a href="{{ url_for('posts.posts_detail', id=row.id) }}">
+                <div class="media-body">
+                    <h4 class="media-heading">{{ row.title|replace_red(search_info)|safe }}</h4>
+                    {{ row.article|striptags|showEllipsis|replace_red(search_info)|safe }}
+                </div>
+                </a>
+                <br>
+                <span style="float: right; font-size: 14px; color: aqua;">{{ moment(row.timestamp).fromNow() }}</span>
+        </div>
+    {% endfor %}
+    {#    分页#}
+    {% from 'common/page_macro.html' import page_macro %}
+    {{ page_macro('posts.search', pagination, search=search_info) }}
+{% endblock %}

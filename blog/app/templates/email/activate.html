@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>欢迎：{{ username }}</h2>
+<h4>请点击下方链接进行激活<a href="{{ url_for(endpoint, token=token,
+_external=True) }}">激活</a></h4>
+</body>
+</html>

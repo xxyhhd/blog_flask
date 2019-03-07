@@ -1,0 +1,32 @@
+{% extends'common/base.html' %}
+{% block title %}
+    我的收藏
+{% endblock %}
+
+{% block page_content %}
+        <h2>我的收藏</h2>
+
+    {#    展示博客的样式#}
+    {% for row in p %}
+{#        <P>{{ row.user.icon }}</P>#}
+{#        <P>{{ row.user.username }}</P>#}
+        <div class="media">
+            <div class="media-left media-middle">
+                <a href="#">
+                    <img class="media-object" src="{{ url_for('static', filename='upload/'+row.user.icon, _external=True) }}" alt="...">
+                </a>
+            </div>
+            <a href="{{ url_for('posts.posts_detail', id=row.id) }}">
+                <div class="media-body">
+                    <h4 class="media-heading">{{ row.title }}</h4>
+                    {{ row.article|striptags|showEllipsis }}
+                </div>
+                </a>
+                <br>
+                <span style="float: right; font-size: 14px; color: aqua;">{{ moment(row.timestamp).fromNow() }}</span>
+        </div>
+    {% endfor %}
+    {#    分页#}
+    {% from 'common/page_macro.html' import page_macro %}
+    {{ page_macro('main.index', pagination) }}
+{% endblock %}
