@@ -1,0 +1,83 @@
+{% extends'common/base.html' %}
+{% block title %}
+    收藏管理
+{% endblock %}
+
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}"/>
+{% endblock %}
+{% block page_content %}
+
+    <form class="form-inline definewidth m20" method="post" action="{{ url_for('owncenter.search_my_posts') }}">
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="搜索标题或内容" name="search">
+        </div>
+        <button type="submit" class="btn btn-success">搜索</button>
+        <a href="{{ url_for('posts.send_posts') }}" target="_blank">
+            <button type="button" class="btn btn-success" id="addnew">新增博客</button>
+        </a>
+    </form>
+    <table class="table table-bordered table-hover definewidth m10">
+        <thead>
+        <tr>
+            <th>博客id</th>
+            <th>博客名称</th>
+            <th>访问量</th>
+            <th>状态</th>
+            <th>发表时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        {% for row in data %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.title }}</td>
+                <td>{{ row.visit }}</td>
+                <td>
+                    {% if row.state %}
+                        所有人可见
+                    {% else %}
+                        仅自己可见
+                    {% endif %}
+                </td>
+                <td>{{ moment(row.timestamp).format('Y-M-D H:m:s') }}</td>
+                <td>
+                    <a href="{{ url_for('owncenter.edit_posts',id=row.id) }}" target="_blank">编辑</a> |
+                    <a href="{{ url_for('owncenter.posts_delete',id=row.id) }}">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="6">分页</td>
+        </tr>
+    </table>
+
+
+    {#{% block page_content %}#}
+    {##}
+    {#    展示博客的样式#}
+    {#    {% for row in data %}#}
+    {#        <div class="media">#}
+    {#            <div class="media-left media-middle">#}
+    {#                <a href="#">#}
+    {#                    <img class="media-object" src="{{ url_for(current_user.icon) }}" alt="">#}
+    {#                    <img class="media-object" src="{{ url_for('static', filename='upload/'+current_user.icon, _external=True) }}" alt="">#}
+    {#                    <img src="{{ url_for('static', filename='upload/'+current_user.icon, _external=True) }}" alt="">#}
+    {#                </a>#}
+    {#            </div>#}
+    {#            <a href="{{ url_for('posts.posts_detail', pid=row.id) }}">#}
+    {#                <div class="media-body">#}
+    {#                    <h4 class="media-heading">{{ row.title }}</h4>#}
+    {#                    {{ row.article|striptags|showEllipsis }}#}
+    {#                </div>#}
+    {#                </a>#}
+    {#                <br>#}
+    {#                <span style="float: right; font-size: 14px; color: aqua;">{{ moment(row.timestamp).fromNow() }}</span>#}
+    {#        </div>#}
+    {#    {% endfor %}#}
+    {#    分页#}
+    {% from 'common/page_macro.html' import page_macro %}
+    {{ page_macro('owncenter.posts_manager', pagination) }} }
+{% endblock %}

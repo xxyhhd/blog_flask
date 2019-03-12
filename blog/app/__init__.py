@@ -7,9 +7,10 @@ from app.extensions import ext_int
 from app.views import register_blueprint
 
 
+# 项目初始化方法
 def create_app(ConfigName):
     app = Flask(__name__)
-    # 加载网站配置
+    # 加载网站配置，config.py文件
     app.config.from_object(config[ConfigName])
     # 加载所有第三方扩展库
     ext_int(app)

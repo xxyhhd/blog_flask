@@ -6,7 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Seralize  # 导入�
 from app.extensions import login_manager
 from flask_login import UserMixin
 from datetime import datetime
-
+from .posts import Posts
 
 class User(UserMixin, db.Model, DB):
     id = db.Column(db.Integer, primary_key=True)
@@ -28,7 +28,12 @@ class User(UserMixin, db.Model, DB):
                 不加lazy属性，则返回结果的列表
     """
     posts = db.relationship('Posts', backref='user', lazy='dynamic')
-    comment = db.relationship('Comment', backref='comment_user', lazy='dynamic')
+    comment = db.relationship(
+        'Comment', backref='comment_user', lazy='dynamic')
+    # secondary 是多对多时指定数据的中间表
+    # backref给另一方的多设置查询结果为查询集，可以进行查询结果的过滤
+    favorites = db.relationship('Posts', secondary='collections', backref=db.backref(
+        'users', lazy='dynamic'), lazy='dynamic')
 
     @property
     def password(self):
@@ -65,12 +70,25 @@ class User(UserMixin, db.Model, DB):
         except:
             return False
 
-    # def delete_overdue_user(self):
-    #     import time
-    #     u = User.query.filter(User.confirm == False)
-    #     for i in u:
-    #         print(datetime.utcnow() - i.timestamp)
-    #         time.sleep(100)
+    # 判断是否收藏的方法
+    def is_favorite(self, id):
+            favorites = self.favorites.all()
+            for f in favorites:
+                if f.id == id:
+                    return True
+            return False
+
+    # 执行收藏的方法
+    def add_favorite(self, id):
+        self.favorites.append(Posts.query.get(id))
+        db.session.commit()
+
+
+    # 取消收藏的方法
+    def del_favorite(self, id):
+        self.favorites.remove(Posts.query.get(id))
+        db.session.commit()
+
 
 
 # 回调函数，实时获取user表中的数据

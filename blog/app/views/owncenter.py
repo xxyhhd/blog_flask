@@ -37,17 +37,17 @@ def posts_delete(id):
 @own.route('/posts_attention/<int:id>/')
 @login_required
 def posts_attention(id):
-    attention_list = current_user.attention.split(',')
-    if str(id) not in attention_list:
-        attention_list.append(str(id))
-        a = True
-    else:
-        attention_list.remove(str(id))
-        a = False
-    print(attention_list)
-    current_user.attention = ','.join([str(i) for i in attention_list])
-    current_user.save()
-    p = Posts.query.get(id)
+    # attention_list = current_user.attention.split(',')
+    # if str(id) not in attention_list:
+    #     attention_list.append(str(id))
+    #     a = True
+    # else:
+    #     attention_list.remove(str(id))
+    #     a = False
+    # print(attention_list)
+    # current_user.attention = ','.join([str(i) for i in attention_list])
+    # current_user.save()
+    # p = Posts.query.get(id)
     # 写评论
     form = SendComment()
     if form.validate_on_submit():
@@ -58,7 +58,7 @@ def posts_attention(id):
         (Comment.timestamp.desc()).limit(2)
     data_all = Comment.query.filter(Comment.post_id == id).order_by \
         (Comment.timestamp.desc()).limit(100)
-    return render_template('posts/page_detail.html', p=p, a=a, data_all=data_all, data=data, form=form)
+    return render_template('posts/page_detail.html', p=p, data_all=data_all, data=data, form=form)
 
 
 # 我的收藏
@@ -70,9 +70,11 @@ def my_attention():
     except:
         page = 1
     # 查出我收藏的博客并按收藏时间进行展示
-    attention_list = current_user.attention.split(',')
-    pagination = Posts.query.filter(Posts.id.in_([int(i) for i in attention_list[1:len(attention_list)]])).order_by \
-        (Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
+    # attention_list = current_user.attention.split(',')
+    # pagination = Posts.query.filter(Posts.id.in_([int(i) for i in attention_list[1:len(attention_list)]])).order_by \
+    #     (Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
+    
+    pagination = current_user.favorites.all().paginate(page, current_app.config['PAGE_NUM'], False)
     # 获取当前页面所有数据
     data = pagination.items
     print(pagination)

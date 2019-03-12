@@ -1,68 +1,96 @@
 {% extends'common/base.html' %}
 {% block title %}
-    博客详情
+博客详情
 {% endblock %}
 
 
 {% block page_content %}
-    {#    {% from 'bootstrap/wtf.html' import quick_form %}#}
-    {#    {% for row in p %}#}
-    <div class="media-body">
-        <h4 class="media-heading">{{ p.title }}</h4>
-        {{ p.article|safe }}
-    </div>
-    {#    {% endfor %}#}
-    <br>
-    <br>
-    <br>
-    <br>
-    <span style="float: right">
-        <p><span>作者：{{ p.user.username }}</span></p>
-        <P><span>发表时间：{{ moment(p.timestamp).format('Y-M-D H:m:s') }}</span></p>
-    </span>
-    <br>
-    <br>
-    {#              收藏/取消收藏#}
-    {% if current_user.is_authenticated %}
-
+<div class="media-body">
+    <h4 class="media-heading">{{ p.title }}</h4>
+    {{ p.article|safe }}
+</div>
+<br>
+<br>
+<br>
+<br>
+<span style="float: right">
+    <p><span>作者：{{ p.user.username }}</span></p>
+    <P><span>发表时间：{{ moment(p.timestamp).format('Y-M-D H:m:s') }}</span></p>
+</span>
+<br>
+<br>
+{#              收藏/取消收藏#}
+<!-- {% if current_user.is_authenticated %} -->
+<!-- 
         <a href="{{ url_for('owncenter.posts_attention',id=p.id) }}">{% if a %}取消收藏{% else %}收藏{% endif %}</a>
 
-        <br>
-        <br>
-        {% from 'bootstrap/wtf.html' import quick_form %}
-        {{ quick_form(form) }}
-        <br>
-    {% endif %}
-    <br>
-    <hr>
-    <h1 style="color: aqua;">评论区</h1>
-    <br>
-    <h2 style="color: blue">我的评论(最新的三条)</h2>
-    <br>
-    {#    展示我的评论的样式#}
-    {% for row in data %}
-        {{ row.article|striptags|showEllipsis }}
-        <br>
-        <span style="float: right; font-size: 14px; color: aqua;">{{ moment(row.timestamp).fromNow() }}</span>
-        <br>
-    {% endfor %}
-    <br>
-    <br>
-    <h2 style="color: blue">所有评论(最新的100条)</h2>
-    <br>
-    {% for row in data_all %}
-        <div class="media-body">
-            {{ row.article|safe }}
-        </div>
-        <br>
-        <br>
-        <span style="float: right">
-        <p><span>评论人：{{ row.comment_user.username }}</span></p>
-        <P><span>评论时间：{{ moment(row.timestamp).format('Y-M-D H:m:s') }}</span></p>
-        </span>
-        <br>
-        <br>
-        <hr>
-        <br>
-    {% endfor %}
+        <br> -->
+<p><span style="cursor: pointer;" onclick="favourite({{ p.id }})" id="f{{ p.id }}">
+    {% if current_user.is_authenticated %}{% if current_user.is_favorite(p.id) %}取消收藏
+    {% else %} 收藏{% endif %}{% else %}收藏{% endif %}
+    </span></p>
+<br>
+<br>
+{% from 'bootstrap/wtf.html' import quick_form %}
+{{ quick_form(form) }}
+<br>
+{% endif %}
+<br>
+<hr>
+<h1 style="color: aqua;">评论区</h1>
+<br>
+<h2 style="color: blue">我的评论(最新的三条)</h2>
+<br>
+{#    展示我的评论的样式#}
+{% for row in data %}
+{{ row.article|striptags|showEllipsis }}
+<br>
+<span style="float: right; font-size: 14px; color: aqua;">{{ moment(row.timestamp).fromNow() }}</span>
+<br>
+{% endfor %}
+<br>
+<br>
+<h2 style="color: blue">所有评论(最新的100条)</h2>
+<br>
+{% for row in data_all %}
+<div class="media-body">
+    {{ row.article|safe }}
+</div>
+<br>
+<br>
+<span style="float: right">
+    <p><span>评论人：{{ row.comment_user.username }}</span></p>
+    <P><span>评论时间：{{ moment(row.timestamp).format('Y-M-D H:m:s') }}</span></p>
+</span>
+<br>
+<br>
+<hr>
+<br>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    function favourite(id) 
+    {
+        var node = $('#f' + id);
+        $.get({{ url_for('posts.dofavorite') }}, { 'id': id }, function(data, status) 
+        {
+            console.log(data.code);
+            if(data.code == 200){
+                if (node.text() == '收藏') {
+                    node.text('取消收藏')
+                } else {
+                    node.text('收藏')
+                }
+            }else{
+                if(window.confirm('您是否还没有登录？\n请前去登录')){
+                    window.location.href = {{url_for('user.login')}};
+                }
+            }   
+        });
+    }
+</script>
+
 {% endblock %}
