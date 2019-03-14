@@ -15,8 +15,8 @@ def posts_manager():
     except:
         page = 1
     # 查出自己的博客并按时间降序进行展示
-    pagination = Posts.query.filter(Posts.uid == current_user.get_id()).order_by \
-        (Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
+    pagination = Posts.query.filter(Posts.uid == current_user.get_id()).order_by(Posts.timestamp.desc()).paginate(
+        page, current_app.config['PAGE_NUM'], False)
     # 获取当前页面所有数据
     data = pagination.items
     current_username = current_user.username
@@ -51,13 +51,14 @@ def posts_attention(id):
     # 写评论
     form = SendComment()
     if form.validate_on_submit():
-        info = Comment(article=form.article.data, user_id=current_user.id, post_id=id)
+        info = Comment(article=form.article.data,
+                       user_id=current_user.id, post_id=id)
         info.save()
         flash('评论成功')
-    data = Comment.query.filter(Comment.post_id == id, Comment.comment_user == current_user).order_by \
-        (Comment.timestamp.desc()).limit(2)
-    data_all = Comment.query.filter(Comment.post_id == id).order_by \
-        (Comment.timestamp.desc()).limit(100)
+    data = Comment.query.filter(Comment.post_id == id, Comment.comment_user == current_user).order_by(
+        Comment.timestamp.desc()).limit(2)
+    data_all = Comment.query.filter(Comment.post_id == id).order_by(
+        Comment.timestamp.desc()).limit(100)
     return render_template('posts/page_detail.html', p=p, data_all=data_all, data=data, form=form)
 
 
@@ -71,16 +72,21 @@ def my_attention():
         page = 1
     # 查出我收藏的博客并按收藏时间进行展示
     # attention_list = current_user.attention.split(',')
-    # pagination = Posts.query.filter(Posts.id.in_([int(i) for i in attention_list[1:len(attention_list)]])).order_by \
-    #     (Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
-    
-    pagination = current_user.favorites.all().paginate(page, current_app.config['PAGE_NUM'], False)
-    # 获取当前页面所有数据
-    data = pagination.items
-    print(pagination)
-    print(data)
+    # pagination = Posts.query.filter(current_user.favorites.all()).order_by(
+    #     Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
+    # print(pagination)
+
+    # pagination = current_user.favorites.all().paginate(page, current_app.config['PAGE_NUM'], False)
+    # # 获取当前页面所有数据
+    # data = pagination.items
+    # print(pagination)
+    # print(data)
     # return render_template('main/index.html', p=data, pagination=pagination)
-    return render_template('owncenter/my_attention.html', p=data, pagination=pagination)
+    data = current_user.favorites.all()
+    # pagination = current_user.favorites.all().paginate(page, current_app.config['PAGE_NUM'], False)
+    # print (current_user.favorites.posts_id)
+    # data = pagination.items
+    return render_template('owncenter/my_attention.html', p=data)
 
 
 # 博客修改
@@ -121,7 +127,7 @@ def search_my_posts():
         page = 1
     # 搜索范围是标题和内容，并且在展示的时候匹配的内容红色显示
     pagination = Posts.query.filter(or_(Posts.title.contains(search_info), Posts.article.contains(search_info)),
-                                    Posts.uid == current_user.id).order_by \
-        (Posts.timestamp.desc()).paginate(page, current_app.config['PAGE_NUM'], False)
+                                    Posts.uid == current_user.id).order_by(Posts.timestamp.desc()).paginate(
+        page, current_app.config['PAGE_NUM'], False)
     data = pagination.items
     return render_template('posts/search_detail.html', data=data, search_info=search_info, pagination=pagination)

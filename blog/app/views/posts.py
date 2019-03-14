@@ -65,9 +65,10 @@ def dofavorite():
         # 判断是否收藏
         if current_user.is_favorite(id):
             current_user.del_favorite(id)
+            return jsonify({'code': 100})
         else:
             current_user.add_favorite(id)
-        return jsonify({'code': 200})
+            return jsonify({'code': 200})
     except:
         return jsonify({'code': 500})
 
